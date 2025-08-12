@@ -1,0 +1,22 @@
+---
+- name: Launch EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: "myAAP-instance"
+        key_name: "your-key-name"
+        instance_type: "t2.micro"
+        image_id: "ami-0abcdef1234567890"
+        region: "us-east-1"
+        wait: yes
+        count: 1
+        state: present
+      register: ec2
+
+    - name: Print instance info
+      debug:
+        var: ec2.instances
