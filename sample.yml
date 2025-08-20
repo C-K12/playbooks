@@ -1,6 +1,7 @@
 ---
-- name: Demo AH configuration collection
+- name: Test AH namespace
   hosts: localhost
+  connection: local
   gather_facts: false
 
   tasks:
@@ -8,3 +9,4 @@
       infra.ah_configuration.ah_namespace:
         name: demo_namespace
         state: present
+
