@@ -28,7 +28,7 @@
           | sort(attribute='id')
           | reverse
           | list
-          | truncate(5, end='')
+          | slice(5)
         }}
       when: jobs.results | default(jobs.json.results | default([])) | length > 0
 
@@ -36,21 +36,3 @@
       ansible.builtin.debug:
         msg: "No jobs found in AAP Controller!"
       when: jobs.results | default(jobs.json.results | default([])) | length == 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-
- 
-
-
