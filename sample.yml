@@ -1,47 +1,10 @@
 ---
-- name: List last 5 jobs in AAP
+- name: Demo AH configuration collection
   hosts: localhost
   gather_facts: false
-  collections:
-    - ansible.controller
-    - community.general
-
-  vars:
-    controller_host: "https://51.20.108.56"
-    controller_username: "admin"
-    controller_password: "chanukya123"
-    validate_certs: false
 
   tasks:
-    - name: Get job list from AAP
-      ansible.controller.job_list:
-        controller_host: "{{ controller_host }}"
-        controller_username: "{{ controller_username }}"
-        controller_password: "{{ controller_password }}"
-        validate_certs: "{{ validate_certs }}"
-      register: jobs
-
-    - name: Prepare last 5 jobs safely
-      set_fact:
-        last_five_jobs: >-
-          {{
-            (jobs.results | default(jobs.json.results | default([])))
-            | sort(attribute='id')
-            | reverse
-            | community.general.list_slice(start=0, end=5)
-          }}
-
-    - name: Show last 5 job summaries
-      ansible.builtin.debug:
-        msg: >
-          Job ID={{ item.id }}
-          | Name={{ item.name | default('N/A') }}
-          | Status={{ item.status | default('N/A') }}
-          | URL={{ controller_host }}/#/jobs/playbook/{{ item.id }}
-      loop: "{{ last_five_jobs }}"
-      when: last_five_jobs | length > 0
-
-    - name: No jobs found message
-      ansible.builtin.debug:
-        msg: "No jobs found in AAP Controller!"
-      when: last_five_jobs | length == 0
+    - name: Create a namespace in Automation Hub
+      infra.ah_configuration.ah_namespace:
+        name: demo_namespace
+        state: present
