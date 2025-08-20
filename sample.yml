@@ -4,6 +4,7 @@
   gather_facts: false
   collections:
     - ansible.controller
+    - community.general
 
   vars:
     controller_host: "https://51.20.108.56"
@@ -20,28 +21,23 @@
         validate_certs: "{{ validate_certs }}"
       register: jobs
 
-    - name: Prepare last 5 jobs
+    - name: Prepare last 5 jobs safely
       set_fact:
         last_five_jobs: >-
           {{
             (jobs.results | default(jobs.json.results | default([])))
             | sort(attribute='id')
             | reverse
-            | list
-            [:5]
+            | community.general.list_slice(start=0, end=5)
           }}
 
-    - name: Show last 5 job summaries in table format
+    - name: Show last 5 job summaries
       ansible.builtin.debug:
-        msg: |
-          --------------------------------------------------------------
-          ID:       {{ item.id }}
-          Name:     {{ item.name | default('N/A') }}
-          Status:   {{ item.status | default('N/A') }}
-          Started:  {{ item.started | default('N/A') }}
-          Finished: {{ item.finished | default('N/A') }}
-          URL:      {{ controller_host }}/#/jobs/playbook/{{ item.id }}
-          --------------------------------------------------------------
+        msg: >
+          Job ID={{ item.id }}
+          | Name={{ item.name | default('N/A') }}
+          | Status={{ item.status | default('N/A') }}
+          | URL={{ controller_host }}/#/jobs/playbook/{{ item.id }}
       loop: "{{ last_five_jobs }}"
       when: last_five_jobs | length > 0
 
