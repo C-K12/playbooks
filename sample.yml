@@ -19,7 +19,7 @@
         validate_certs: "{{ validate_certs }}"
       register: jobs
 
-    - name: Prepare last 5 jobs
+    - name: Prepare last 5 jobs (flatten list properly)
       ansible.builtin.set_fact:
         last_five_jobs: >-
           {{
@@ -27,12 +27,13 @@
             | sort(attribute='id')
             | reverse
             | list
-          }}[:5]
+          }}
+
 
     - name: Show last 5 job summaries with URLs
       ansible.builtin.debug:
         msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }} | URL={{ controller_host }}/#/jobs/playbook/{{ item.id }}"
-      loop: "{{ last_five_jobs }}"
+      loop: "{{ last_five_jobs[:5] }}"
       when: last_five_jobs | length > 0
 
     - name: No jobs found message
