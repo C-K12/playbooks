@@ -5,27 +5,32 @@
   collections:
     - ansible.controller
   vars:
-    controller_host: "https://51.20.108.56"   # your AAP URL
-    controller_username: "admin"              # your AAP admin user
-    controller_password: "chanukya123"        # your AAP password
-    validate_certs: false                     # false if self-signed cert
+    controller_host: "https://51.20.108.56"
+    controller_username: "admin"
+    controller_password: "chanukya123"
+    validate_certs: false
+
   tasks:
     - name: Get job list from AAP
       ansible.controller.job_list:
-        controller_host: "{{ controller_host }}"
-        controller_username: "{{ controller_username }}"
-        controller_password: "{{ controller_password }}"
-        validate_certs: "{{ validate_certs }}"
       register: jobs
 
-    - name: Show raw response (proof of API call)
+    - name: Show job IDs
       ansible.builtin.debug:
-        var: jobs
+        msg: "Found job with ID={{ item.id }}"
+      loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
+
+    - name: Get details for each job
+      ansible.controller.job_info:
+        id: "{{ item.id }}"
+      loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
+      register: job_details
 
     - name: Show concise job summary (ID, Name, Status)
       ansible.builtin.debug:
         msg: "Job ID={{ item.id }} | Name='{{ item.name }}' | Status={{ item.status }}"
-      loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
+      loop: "{{ job_details.results | map(attribute='jobs.0') | list }}"
+
 
 
 
