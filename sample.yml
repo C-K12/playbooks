@@ -1,7 +1,19 @@
 ---
-- name: Simple playbook using a collection role
-  hosts: all
+- name: List jobs in AAP
+  hosts: localhost
   gather_facts: false
+  collections:
+    - ansible.controller
+  vars:
+    controller_host: "https:51.20.108.56"
+    controller_username: "admin"
+    controller_password: "chanukya123"
+    validate_certs: false  
+  tasks:
+    - name: Get job list
+      ansible.controller.job_list:
+      register: jobs
 
-  roles:
-    - infra.aap_utilities.sample_role
+ 
+
+
