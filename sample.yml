@@ -8,10 +8,14 @@
     controller_host: "https://51.20.108.56"
     controller_username: "admin"
     controller_password: "chanukya123"
-    validate_certs: false  
+    validate_certs: false
   tasks:
     - name: Get job list
       ansible.controller.job_list:
+        controller_host: "{{ controller_host }}"
+        controller_username: "{{ controller_username }}"
+        controller_password: "{{ controller_password }}"
+        validate_certs: "{{ validate_certs }}"
       register: jobs
 
  
