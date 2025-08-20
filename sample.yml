@@ -1,5 +1,5 @@
 ---
-- name: Demo: List Last 5 Jobs in AAP (UI-friendly)
+- name: List Last 5 Jobs in AAP (UI-friendly)
   hosts: localhost
   gather_facts: false
   collections:
