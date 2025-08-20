@@ -22,10 +22,13 @@
       ansible.builtin.debug:
         var: jobs
 
-    - name: Show concise job summary
+    - name: Show concise job summary (ID, Name, Status)
       ansible.builtin.debug:
-        msg: "{{ item.id }} | {{ item.name }} | {{ item.status }}"
+        msg: "Job ID={{ item.id }} | Name='{{ item.name }}' | Status={{ item.status }}"
       loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
+
+
+
 
       
 
