@@ -27,7 +27,7 @@
           (jobs.results | default(jobs.json.results | default([])))
           | sort(attribute='id')
           | reverse
-          | slice(0, 5)
+          | take(5)
         }}
       when: jobs.results | default(jobs.json.results | default([])) | length > 0
 
