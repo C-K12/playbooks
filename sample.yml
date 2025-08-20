@@ -1,5 +1,5 @@
 ---
-- name: Demo: List jobs in AAP
+- name: List jobs in AAP
   hosts: localhost
   gather_facts: false
   collections:
