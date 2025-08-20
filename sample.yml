@@ -1,13 +1,13 @@
 ---
-- name: List Last 5 Jobs in AAP
+- name: Demo: List Last 5 Jobs in AAP (UI-friendly)
   hosts: localhost
   gather_facts: false
   collections:
     - ansible.controller
   vars:
-    controller_host: "https://51.20.108.56"
-    controller_username: "admin"
-    controller_password: "chanukya123"
+    tower_host: "https://51.20.108.56"
+    tower_username: "admin"
+    tower_password: "chanukya123"
     validate_certs: false
 
   tasks:
@@ -21,8 +21,9 @@
 
     - name: Show last 5 job summaries
       debug:
-        msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }}"
+        msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }} | URL={{ tower_host }}{{ item.url }}"
       loop: "{{ jobs.results | sort(attribute='id') | reverse | slice(0,5) }}"
+
 
 
 
