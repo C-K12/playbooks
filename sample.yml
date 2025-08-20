@@ -22,17 +22,21 @@
     - name: Show last 5 job summaries with URLs
       ansible.builtin.debug:
         msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }} | URL={{ controller_host }}{{ item.url }}"
-      loop: "{{ (jobs.results | default(jobs.json.results | default([]))) 
-                | sort(attribute='id') 
-                | reverse 
-                | list
-                | slice(0,5) | first | default([]) }}"
+      loop: >-
+        {{
+          (jobs.results | default(jobs.json.results | default([])))
+          | sort(attribute='id')
+          | reverse
+          | list
+          [:5]
+        }}
       when: jobs.results | default(jobs.json.results | default([])) | length > 0
 
     - name: No jobs found message
       ansible.builtin.debug:
         msg: "No jobs found in AAP Controller!"
       when: jobs.results | default(jobs.json.results | default([])) | length == 0
+
 
 
 
