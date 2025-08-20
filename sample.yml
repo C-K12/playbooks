@@ -1,5 +1,5 @@
 ---
-- name: List jobs in AAP
+- name: List Last 5 Jobs in AAP
   hosts: localhost
   gather_facts: false
   collections:
@@ -11,25 +11,19 @@
     validate_certs: false
 
   tasks:
-    - name: Get job list from AAP
+    - name: Get all jobs from controller
       ansible.controller.job_list:
       register: jobs
 
-    - name: Show job IDs
-      ansible.builtin.debug:
-        msg: "Found job with ID={{ item.id }}"
-      loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
+    - name: Display total jobs found
+      debug:
+        msg: "Total jobs found: {{ jobs.results | length }}"
 
-    - name: Get details for each job
-      ansible.controller.job_info:
-        id: "{{ item.id }}"
-      loop: "{{ jobs.results | default(jobs.json.results | default([])) }}"
-      register: job_details
+    - name: Show last 5 job summaries
+      debug:
+        msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }}"
+      loop: "{{ jobs.results | sort(attribute='id') | reverse | slice(0,5) }}"
 
-    - name: Show concise job summary (ID, Name, Status)
-      ansible.builtin.debug:
-        msg: "Job ID={{ item.id }} | Name='{{ item.name }}' | Status={{ item.status }}"
-      loop: "{{ job_details.results | map(attribute='jobs.0') | list }}"
 
 
 
