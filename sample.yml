@@ -4,6 +4,7 @@
   gather_facts: false
   collections:
     - ansible.controller
+
   vars:
     controller_host: "https://51.20.108.56"
     controller_username: "admin"
@@ -19,21 +20,26 @@
         validate_certs: "{{ validate_certs }}"
       register: jobs
 
-    - name: Prepare last 5 jobs (flatten list properly)
-      ansible.builtin.set_fact:
-        last_five_jobs: >-
-          {{
-            (jobs.results | default(jobs.json.results | default([])))
-            | sort(attribute='id')
-            | reverse
-            | list
-          }}
+    - name: Prepare last 5 jobs
+      set_fact:
+        last_five_jobs: "{{ (jobs.results | default(jobs.json.results | default([]))) 
+                            | sort(attribute='id') 
+                            | reverse 
+                            | list 
+                            | slice(0, 5) }}"
 
-
-    - name: Show last 5 job summaries with URLs
+    - name: Show last 5 job summaries in table format
       ansible.builtin.debug:
-        msg: "Job ID={{ item.id }} | Name='{{ item.name | default('N/A') }}' | Status={{ item.status | default('N/A') }} | URL={{ controller_host }}/#/jobs/playbook/{{ item.id }}"
-      loop: "{{ last_five_jobs[:5] }}"
+        msg: |
+          --------------------------------------------------------------
+          ID:       {{ item.id }}
+          Name:     {{ item.name | default('N/A') }}
+          Status:   {{ item.status | default('N/A') }}
+          Started:  {{ item.started | default('N/A') }}
+          Finished: {{ item.finished | default('N/A') }}
+          URL:      {{ controller_host }}/#/jobs/playbook/{{ item.id }}
+          --------------------------------------------------------------
+      loop: "{{ last_five_jobs }}"
       when: last_five_jobs | length > 0
 
     - name: No jobs found message
